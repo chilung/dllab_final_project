@@ -1,0 +1,5 @@
+train  = clothes/cfg/train.txt
+valid  = clothes/cfg/valid.txt
+names = clothes/cfg/clothes.names
+backup = clothes/cfg
+gpus  = 0,1,2,3

@@ -1,0 +1,26 @@
+# Super Resolution 執行方法
+1. Environment preparation:
+===========================
+cd /home/dllab/ngraph
+source ~/ngraph/onnx/bin/activate
+pip install --upgrade pip
+pip3 install --force-reinstall torch==0.4.0
+cd ~/TensorRT-5.0.2.6/python
+pip3 install tensorrt-5.0.2.6-py2.py3-none-any.whl
+pip install matplotlib
+pip install imageio
+pip install tqdm
+pip install scikit-image
+
+2. NOTICE:
+==========
+Make sure your testset are put in directory:
+    [TESTDATADIR]/DIV2K/DIV2K_valid_HR
+          and
+    [TESTDATADIR]/DIV2K/DIV2K_valid_LR_bicubic
+
+3. Usage:
+=========
+in directoy ./super_resolution/EDSR-PyTorch/src
+$ TESTDATADIR=[PATH to DIV2K VALIDATE DATA] python3 example.py
+

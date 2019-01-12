@@ -9,6 +9,10 @@ import torch.nn.utils as utils
 from tqdm import tqdm
 from collections import OrderedDict
 
+dim0 = 0
+dim2 = 0
+dim3 = 0
+
 class Trainer():
     def __init__(self, args, loader, my_model, my_loss, ckp):
         self.args = args
@@ -27,6 +31,8 @@ class Trainer():
         self.error_last = 1e8
 
     def train(self):
+        global dim0, dim2, dim3
+        
         self.optimizer.schedule()
         self.loss.step()
         epoch = self.optimizer.get_last_epoch() + 1
@@ -41,6 +47,11 @@ class Trainer():
         timer_data, timer_model = utility.timer(), utility.timer()
         for batch, (lr, hr, _, idx_scale) in enumerate(self.loader_train):
             lr, hr = self.prepare(lr, hr)
+            
+            dim0 = lr.size()[0] 
+            dim2 = lr.size()[2]
+            dim3 = lr.size()[3]
+
             timer_data.hold()
             timer_model.tic()
 
@@ -73,6 +84,7 @@ class Trainer():
         import onnx
         from ngraph_onnx.onnx_importer.importer import import_onnx_model
         import ngraph as ng
+        global dim2, dim3
 
         torch.set_grad_enabled(False)
 
@@ -95,10 +107,14 @@ class Trainer():
                 for batch, (lr, hr, filename, _) in enumerate(d):
                     print('{} '.format(batch), end='', flush=True)
                     lr, hr = self.prepare(lr, hr)
+                    dim0 = lr.size()[0]
+                    dim2 = lr.size()[2]
+                    dim3 = lr.size()[3]
+                    
                     showbug = False
                     if showbug: print('stage1', flush=True)
                     if self.args.ngraph:
-
+                        
                         pytorch_model_name = self.args.ngraph
                         pytorch_edsr_model = torch.load(pytorch_model_name).cuda()
                         if showbug: print('stage2-1', flush=True)

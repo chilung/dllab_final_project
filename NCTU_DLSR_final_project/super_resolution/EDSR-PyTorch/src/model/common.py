@@ -3,6 +3,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import trainer
 
 def default_conv(in_channels, out_channels, kernel_size, bias=True):
     return nn.Conv2d(
@@ -64,7 +65,11 @@ class Upsampler(nn.Sequential):
         if (scale & (scale - 1)) == 0:    # Is scale = 2^n?
             for _ in range(int(math.log(scale, 2))):
                 m.append(conv(n_feats, 4 * n_feats, 3, bias))
-                m.append(nn.PixelShuffle(2))
+                if torch.__version__ == '0.4.0':
+                    m.append(nn.PixelShuffle(2))
+                else: # '0.4.1'
+                    None
+
                 if bn:
                     m.append(nn.BatchNorm2d(n_feats))
                 if act == 'relu':
@@ -86,3 +91,12 @@ class Upsampler(nn.Sequential):
 
         super(Upsampler, self).__init__(*m)
 
+    def forward(self, x):
+        for module in self._modules.values():
+            x = module(x)
+        if torch.__version__ == '0.4.0':
+            None
+        else: # '0.4.1'
+            x = x.view(trainer.dim0, 64, trainer.dim2 * 2, trainer.dim3 * 2)
+
+        return x

@@ -85,7 +85,7 @@ class Trainer():
         import onnx
         from ngraph_onnx.onnx_importer.importer import import_onnx_model
         import ngraph as ng
-        global dim2, dim3
+        global dim0, dim2, dim3
 
         torch.set_grad_enabled(False)
 
@@ -108,6 +108,7 @@ class Trainer():
                 for batch, (lr, hr, filename, _) in enumerate(d):
                     print('{} '.format(batch), end='', flush=True)
                     lr, hr = self.prepare(lr, hr)
+                    print('test lr.size: {}'.format(lr.size()))
                     dim0 = lr.size()[0]
                     dim2 = lr.size()[2]
                     dim3 = lr.size()[3]
